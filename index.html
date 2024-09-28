@@ -22,9 +22,23 @@
    <script type="text/javascript">
       window.addEventListener('load', () => {
 
+         /**
+          * Gets a random number between 1 and the given number.
+          *
+          * @param {number} [max=100] The maximum number
+          * @returns {number} A random number between 1 and the given number
+          */
          const getRandNum = (max = 100) =>
             Math.floor(Math.random() * max + 1)
 
+
+         /**
+          * Creates an element with the given tag and content, and adds a click event handler to remove the element when clicked.
+          *
+          * @param {string} tag The tag of the element to create
+          * @param {string} content The content of the element to create
+          * @returns {HTMLElement} The created element
+          */
          const createElement = (tag, content) => {
             const element = document.createElement(tag)
             element.textContent = content
@@ -33,6 +47,12 @@
             return element
          }
 
+
+         /**
+          * Adds a random number to the page
+          *
+          * @returns {undefined}
+          */
          const addNumber = () => {
             // Step 1: Get all h3 elements and make an array of them
             allH3 = Array.from(document.querySelectorAll('h3'))
@@ -48,6 +68,11 @@
 
          }
 
+         /**
+          * Removes an element from the page with the given number
+          *
+          * @param {number} number The number to search for
+          */
          const removeElement = (number) => {
             allH3 = Array.from(document.querySelectorAll('h3'))
             // Find number
@@ -55,37 +80,35 @@
                if (parseInt(h3.textContent) === number) {
                   const sumText = document.getElementById('liveSum')
                   container.removeChild(h3)
-                  changeSum()
+                  return changeSum()
                }
             }
-            return
          }
 
+         /**
+          * Sorts all the numbers on the page in either ascending or descending order.
+          *
+          * @param {number} [way=0] The way to sort the numbers. 0 for ascending and 1 for descending.
+          * @returns {undefined} The sorted list
+          */
          const sortNums = (way = 0) => {
             // Step 1: Get all h3 elements and make an array of them
-            allH3 = Array.from(document.querySelectorAll('h3'))
+            const allH3 = Array.from(document.querySelectorAll('h3'))
 
             // Step 2: Sort based on numbers
+            const sorted = allH3.sort((a, b) =>
+               way === 0
+                  ? parseInt(a.textContent) - parseInt(b.textContent)
+                  : parseInt(b.textContent) - parseInt(a.textContent)
+            );
 
-            if (way === 0) { // Ascending
-               allH3Sorted = allH3.sort(function (a, b) {
-                  return parseInt(a.textContent) - parseInt(b.textContent)
-               });
-            } else if (way === 1) { // Descending
-               allH3Sorted = allH3.sort(function (a, b) {
-                  return parseInt(b.textContent) - parseInt(a.textContent)
-               });
-            }
-
-            // Step 3: Clear the container
-            container.innerHTML = ''
-
-            // Step 4: Re-add the sorted elements
-            for (const h3 of allH3Sorted) {
-               container.appendChild(h3)
-            }
+            // Step 3: Re-add the sorted elements
+            container.replaceChildren(...sorted);
          };
 
+         /**
+          * Clears all the numbers on the page and resets the liveSum element to 0.
+          */
          const clearNums = () => {
             container.innerHTML = ''
             const sumText = document.getElementById('liveSum')
@@ -94,6 +117,9 @@
 
          };
 
+         /**
+          * Calculates the sum of all the numbers on the page and updates the liveSum element
+          */
          const changeSum = () => {
             let sum = 0
             // Step 1: Get all h3 elements and make an array of them
@@ -105,6 +131,9 @@
             sumText.textContent = `Sum = ${sum}`
          }
 
+         /**
+          * Changes the background color of the highest and lowest numbers to light blue.
+          */
          const highLow = () => {
             // Step 1: Get all h3 elements and make an array of them
             allH3 = Array.from(document.querySelectorAll('h3'))
@@ -146,14 +175,14 @@
 
 <body class="p-5 text-center">
    <h1>Random numbers</h1>
-   <input type="number" id="maxValue" placeholder="Max Value" min="0" max="100" />
+   <input type="number" id="maxValue" placeholder="Max Value" min="0" max="100" value="100" />
    <button id="btnAdd" class="btn btn-primary my-4">Add a number</button>
    <button id="btnAscAdd" class="btn btn-primary my-4">Sort Ascendingly</button>
    <button id="btnDscAdd" class="btn btn-primary my-4">Sort Descendingly</button>
    <button id="btnClearAdd" class="btn btn-primary my-4">Clear all</button>
    <button id="btnHighLow" class="btn btn-primary my-4">High Low</button>
    <div id="container" class="d-flex flex-wrap gap-3 justify-content-center"></div>
-   <p id="liveSum">0</p>
+   <p id="liveSum">Sum = 0</p>
 </body>
 
 </html>
