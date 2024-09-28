@@ -18,6 +18,27 @@
          padding: 1em;
          margin-right: 0.5em;
       }
+
+      @keyframes bounce {
+         0% {
+            transform: translateY(0);
+            /* Initial position */
+         }
+
+         50% {
+            transform: translateY(-10px);
+            /* Moves up */
+         }
+
+         100% {
+            transform: translateY(0);
+            /* Comes back down */
+         }
+      }
+
+      .smoothMove {
+         animation: bounce 0.5s ease-in-out;
+      }
    </style>
    <script type="text/javascript">
       window.addEventListener('load', () => {
@@ -98,7 +119,7 @@
           */
          const sortNums = (way = 0) => {
             // Step 1: Get all h3 elements and make an array of them
-            const allH3 = Array.from(document.querySelectorAll('h3'))
+            const allH3 = Array.from(document.querySelectorAll('h3'));
 
             // Step 2: Sort based on numbers
             const sorted = allH3.sort((a, b) =>
@@ -107,9 +128,27 @@
                   : parseInt(b.textContent) - parseInt(a.textContent)
             );
 
-            // Step 3: Replace the current children with the new sorted ones
-            container.replaceChildren(...sorted);
+            // Step 3: Apply animation class first
+            for (const h3 of allH3) {
+               h3.classList.add('smoothMove');
+            }
+
+            // Force a reflow here so the browser acknowledges the class change
+            void container.offsetHeight; // This triggers the reflow
+
+            // Step 4: Add event listeners for when the animation ends
+            for (const h3 of sorted) {
+               h3.addEventListener('transitionend', () => {
+                  h3.classList.remove('smoothMove');
+               });
+            }
+
+            // Step 5: Replace the children AFTER the reflow and animation start
+            setTimeout(() => {
+               container.replaceChildren(...sorted);
+            }, 500); // This delay allows the animation to take place
          };
+
 
          /**
           * Clears all the numbers on the page and resets the liveSum element to 0.
