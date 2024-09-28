@@ -21,6 +21,8 @@
    </style>
    <script type="text/javascript">
       window.addEventListener('load', () => {
+         // Global variable
+         let highLowTrigger = false
 
          /**
           * Gets a random number between 1 and the given number.
@@ -47,7 +49,6 @@
             return element
          }
 
-
          /**
           * Adds a random number to the page
           *
@@ -65,6 +66,10 @@
 
             const item = createElement('h3', getRandNum(maxval))
             container.appendChild(item)
+
+            if (highLowTrigger) {
+               highLow(highLowTrigger)
+            }
 
          }
 
@@ -89,7 +94,7 @@
           * Sorts all the numbers on the page in either ascending or descending order.
           *
           * @param {number} [way=0] The way to sort the numbers. 0 for ascending and 1 for descending.
-          * @returns {undefined} The sorted list
+          * @returns The sorted list
           */
          const sortNums = (way = 0) => {
             // Step 1: Get all h3 elements and make an array of them
@@ -102,7 +107,7 @@
                   : parseInt(b.textContent) - parseInt(a.textContent)
             );
 
-            // Step 3: Re-add the sorted elements
+            // Step 3: Replace the current children with the new sorted ones
             container.replaceChildren(...sorted);
          };
 
@@ -125,36 +130,57 @@
             // Step 1: Get all h3 elements and make an array of them
             allH3 = Array.from(document.querySelectorAll('h3'))
             const sumText = document.getElementById('liveSum')
+
+            //Step 2: Find the sum
             for (const h3 of allH3) {
                sum += parseInt(h3.textContent)
             }
+
+            //Step 3: Update sum
             sumText.textContent = `Sum = ${sum}`
+         }
+
+         const resetColors = () => {
+            // Step 1: Get all h3 elements and make an array of them
+            allH3 = Array.from(document.querySelectorAll('h3'))
+
+            // Step 2: Reset the background color
+            for (const h3 of allH3) {
+               h3.style.backgroundColor = '#ffdab9'
+            }
+
          }
 
          /**
           * Changes the background color of the highest and lowest numbers to light blue.
           */
-         const highLow = () => {
-            // Step 1: Get all h3 elements and make an array of them
-            allH3 = Array.from(document.querySelectorAll('h3'))
+         const highLow = (Trigger) => {
+            highLowTrigger = Trigger
+            if (Trigger) {
 
-            // Step 2: Sort based on numbers
-            allH3Sorted = allH3.sort(function (a, b) {
-               return parseInt(a.textContent) - parseInt(b.textContent)
-            });
+               // Step 1: Get all h3 elements and make an array of them
+               allH3 = Array.from(document.querySelectorAll('h3'))
 
-            // Step 3: Reset the background color
-            for (const h3 of allH3Sorted) {
-               h3.style.backgroundColor = '#ffdab9'
+               // Step 2: Sort based on numbers
+               allH3Sorted = allH3.sort(function (a, b) {
+                  return parseInt(a.textContent) - parseInt(b.textContent)
+               });
+
+               // Step 3: Reset the background color
+               for (const h3 of allH3Sorted) {
+                  h3.style.backgroundColor = '#ffdab9'
+               }
+
+               // Step 4: Find the min and max
+               maxVal = allH3Sorted[allH3Sorted.length - 1]
+               minVal = allH3Sorted[0]
+
+               // Step 5: Change the background colour
+               maxVal.style.backgroundColor = '#ADD8E6'
+               minVal.style.backgroundColor = '#ADD8E6'
+            } else {
+               resetColors()
             }
-
-            // Step 4: Find the min and max
-            maxVal = allH3Sorted[allH3Sorted.length - 1]
-            minVal = allH3Sorted[0]
-
-            // Step 5: Change the background colour
-            maxVal.style.backgroundColor = '#ADD8E6'
-            minVal.style.backgroundColor = '#ADD8E6'
          }
 
          const container = document.querySelector('#container')
@@ -168,7 +194,7 @@
          const btCleardd = document.querySelector('#btnClearAdd')
          btnClearAdd.addEventListener('click', () => clearNums())
          const btHighLow = document.querySelector('#btnHighLow')
-         btHighLow.addEventListener('click', () => highLow())
+         btHighLow.addEventListener('click', () => highLow(!highLowTrigger))
       })
    </script>
 </head>
